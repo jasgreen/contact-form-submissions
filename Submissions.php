@@ -48,7 +48,13 @@ class WPCF7Submissions {
     function submission($components, $contact_form, $mail){
         global $wpcf7s_post_id;
 
-        $contact_form_id = $contact_form->id();
+        $contact_form_id = 0;
+        if(method_exists($contact_form,'id')){
+            $contact_form_id = $contact_form->id();
+        } elseif(property_exists($contact_form , 'id' )) {
+            $contact_form_id = $contact_form->id;
+        }
+
         $body = $components['body'];
         $sender = wpcf7_strip_newline( $components['sender'] );
         $recipient = wpcf7_strip_newline( $components['recipient'] );
