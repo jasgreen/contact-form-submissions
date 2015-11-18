@@ -4,7 +4,7 @@ Tags: contact form 7, save contact form, submissions, contact form db, cf7
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SNHXWSXSPYATE
 Requires at least: 3.0.1
 Tested up to: 4.3.1
-Stable tag: 1.0.1
+Stable tag: 1.1
 License: GPLv3
 
 Save all Contact Form 7 submissions in the database.
@@ -29,6 +29,9 @@ None yet
 == Screenshots ==
 
 == Changelog ==
+
+= 1.1 =
+* Added checks for older versions of cf7
 
 = 1.0 =
 * First release
