@@ -7,13 +7,15 @@ Tested up to: 4.3.1
 Stable tag: 1.1
 License: GPLv3
 
-Save all Contact Form 7 submissions in the database.
+Never miss an enquiry again! Save all Contact Form 7 submissions in your database.
 
 == Description ==
 
-No configuration necessary. Once activated all contact form submissions will be saved into the database. Each submission is stored as a post so they can easily be managed using the default WordPress interface.
+No configuration necessary. Once activated all contact form submissions will be saved in your database.
 
-This plugin is completely debranded with absolutely no donation links.
+Submissions are stored as posts so they can easily be managed using the default WordPress interface. You can filter subsmissions by searching, selecting individual contact forms or picking a date range.
+
+All submissions can easily be exported using the default WordPress exporter.
 
 == Installation ==
 
@@ -27,6 +29,9 @@ You will find 'Submissions' menu in your WordPress admin panel under Contact.
 None yet
 
 == Screenshots ==
+
+1. Submissions overview screen
+2. Submission detailed screen
 
 == Changelog ==
 
