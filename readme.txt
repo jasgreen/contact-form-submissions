@@ -17,7 +17,7 @@ This plugin is completely debranded with absolutely no donation links.
 
 == Installation ==
 
-1. Upload `contact-form-7-submissions` to the `/wp-content/plugins/` directory
+1. Upload `contact-form-submissions` to the `/wp-content/plugins/` directory
 1. Activate the plugin through the 'Plugins' menu in WordPress
 
 You will find 'Submissions' menu in your WordPress admin panel under Contact.
