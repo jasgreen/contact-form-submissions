@@ -2,7 +2,7 @@
 /*
 Plugin Name: Contact Form Submissions
 Description: Save all Contact Form 7 submissions in the database.
-Version:     1.0
+Version:     1.1
 Author:      Jason Green
 License:     GPLv3
 */
