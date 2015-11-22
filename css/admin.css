@@ -1,3 +1,10 @@
+.form-table.contact-form-submission {
+    width: 100%;
+}
+.form-table.contact-form-submission td {
+    word-break: break-word;
+}
+
 #post-body-content {
     display: none;
 }

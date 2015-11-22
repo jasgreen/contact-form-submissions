@@ -1,6 +1,6 @@
 === Plugin Name ===
 Contributors: jasongreen
-Tags: contact form 7, save contact form, submissions, contact form db, cf7, wpcf7
+Tags: contact form 7, save contact form, submissions, contact form db, cf7, wpcf7, contact form storage
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SNHXWSXSPYATE
 Requires at least: 3.0.1
 Tested up to: 4.3.1

@@ -1,27 +1,33 @@
 <?php
 /*
 Plugin Name: Contact Form Submissions
-Description: Save all Contact Form 7 submissions in the database.
+Description: Never miss an enquiry again! Save all Contact Form 7 submissions in your database.
 Version:     1.1
 Author:      Jason Green
 License:     GPLv3
+Domain Path: /languages
+Text Domain: contact-form-submissions
 */
 
-define('WPCF7S_TEXT_DOMAIN', 'wpcf7-submissions');
 define('WPCF7S_DIR', realpath(dirname(__FILE__)));
-define('WPCF7S_FILE', 'contact-form-7-submissions/contact-form-7-submissions.php');
+define('WPCF7S_FILE', 'contact-form-submissions/contact-form-submissions.php');
 
 require_once WPCF7S_DIR . '/Submissions.php';
 require_once WPCF7S_DIR . '/Admin.php';
 
-function contact_form_7_submissions_init() {
-  global $contact_form_7_submissions;
-  $contact_form_7_submissions = new WPCF7Submissions();
+function contact_form_submissions_init() {
+  global $contact_form_submissions;
+  $contact_form_submissions = new WPCF7Submissions();
 }
-add_action( 'init', 'contact_form_7_submissions_init', 9 );
+add_action( 'init', 'contact_form_submissions_init', 9 );
 
-function contact_form_7_submissions_admin_init() {
-  global $contact_form_7_submissions_admin;
-  $contact_form_7_submissions_admin = new WPCF7SAdmin();
+function contact_form_submissions_admin_init() {
+  global $contact_form_submissions_admin;
+  $contact_form_submissions_admin = new WPCF7SAdmin();
 }
-add_action( 'admin_init', 'contact_form_7_submissions_admin_init' );
+add_action( 'admin_init', 'contact_form_submissions_admin_init' );
+
+function contact_form_submissions_textdomain() {
+    load_plugin_textdomain( 'contact-form-submissions', false, WPCF7S_DIR . '/languages/');
+}
+add_action( 'plugins_loaded', 'contact_form_submissions_textdomain' );
