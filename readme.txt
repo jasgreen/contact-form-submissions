@@ -4,7 +4,7 @@ Tags: contact form 7, save contact form, submissions, contact form db, cf7, wpcf
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SNHXWSXSPYATE
 Requires at least: 3.0.1
 Tested up to: 4.3.1
-Stable tag: 1.2
+Stable tag: 1.2.1
 License: GPLv3
 
 Never miss an enquiry again! Save all Contact Form 7 submissions in your database.
@@ -34,6 +34,9 @@ None yet
 2. Submission detailed screen
 
 == Changelog ==
+
+= 1.2.1 =
+* Security fix: Fixed posts from being loaded when not logged in. Thanks to [aurepons](https://wordpress.org/support/profile/aurepons) for discovering the issue.
 
 = 1.2 =
 * Added screenshots
