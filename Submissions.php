@@ -5,24 +5,23 @@ class WPCF7Submissions {
         add_action('init', array($this, 'post_type') );
         
         add_filter('wpcf7_mail_components', array($this, 'submission'), 999, 3);
-
     }
 
     function post_type() {
         $labels = array(
-            'name'                => _x( 'Contact Form Submissions', 'Post Type General Name', WPCF7S_TEXT_DOMAIN ),
-            'singular_name'       => _x( 'Submission', 'Post Type Singular Name', WPCF7S_TEXT_DOMAIN ),
-            'menu_name'           => __( 'Submission', WPCF7S_TEXT_DOMAIN ),
-            'all_items'           => __( 'Submissions', WPCF7S_TEXT_DOMAIN ),
-            'view_item'           => __( 'Submission', WPCF7S_TEXT_DOMAIN ),
-            'edit_item'           => __( 'Submission', WPCF7S_TEXT_DOMAIN ),
-            'search_items'        => __( 'Search', WPCF7S_TEXT_DOMAIN ),
-            'not_found'           => __( 'Not found', WPCF7S_TEXT_DOMAIN ),
-            'not_found_in_trash'  => __( 'Not found in Trash', WPCF7S_TEXT_DOMAIN ),
+            'name'                => __( 'Contact Form Submissions', 'contact-form-submissions' ),
+            'singular_name'       => __( 'Submission', 'contact-form-submissions' ),
+            'menu_name'           => __( 'Submission', 'contact-form-submissions' ),
+            'all_items'           => __( 'Submissions', 'contact-form-submissions' ),
+            'view_item'           => __( 'Submission', 'contact-form-submissions' ),
+            'edit_item'           => __( 'Submission', 'contact-form-submissions' ),
+            'search_items'        => __( 'Search', 'contact-form-submissions' ),
+            'not_found'           => __( 'Not found', 'contact-form-submissions' ),
+            'not_found_in_trash'  => __( 'Not found in Trash', 'contact-form-submissions' ),
         );
         $args = array(
-            'label'               => __( 'Submission', WPCF7S_TEXT_DOMAIN ),
-            'description'         => __( 'Post Type Description', WPCF7S_TEXT_DOMAIN ),
+            'label'               => __( 'Submission', 'contact-form-submissions' ),
+            'description'         => __( 'Post Type Description', 'contact-form-submissions' ),
             'labels'              => $labels,
             'supports'            => false,
             'hierarchical'        => true,

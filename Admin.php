@@ -2,8 +2,6 @@
 class WPCF7SAdmin {
     
     function __construct() {
-        add_action('admin_menu', array($this, 'menu') );
-
         add_filter('manage_wpcf7s_posts_columns', array($this, 'set_columns'), 999 );
         add_action('manage_wpcf7s_posts_custom_column' , array($this, 'column'), 10, 2 );
         add_action('restrict_manage_posts',array($this, 'filters'));
@@ -23,7 +21,7 @@ class WPCF7SAdmin {
 
     function custom_status($translations, $text, $domain){
         if('Published' === $text){
-            $translations = __('Submitted', WPCF7S_TEXT_DOMAIN);
+            $translations = __('Submitted', 'contact-form-submissions');
         }
         return $translations;
     }
@@ -38,7 +36,7 @@ class WPCF7SAdmin {
 
     function views($views){
         if(isset( $views['publish'] ) ){
-            $views['publish'] = str_replace( 'Published', __('Submitted', WPCF7S_TEXT_DOMAIN), $views['publish'] );
+            $views['publish'] = str_replace( __('Published', 'contact-form-submissions'), __('Submitted', 'contact-form-submissions'), $views['publish'] );
         }
         $keep_views = array('all', 'publish', 'trash');
         // remove others
@@ -62,7 +60,7 @@ class WPCF7SAdmin {
             $forms = get_posts($args);
             ?>
             <select name="wpcf7_contact_form">
-                <option value="0"><?php _e('Contact Form', WPCF7S_TEXT_DOMAIN); ?></option>
+                <option value="0"><?php _e('Contact Form', 'contact-form-submissions'); ?></option>
                 <?php foreach($forms as $post){ ?>
                     <?php $selected = ($post->ID == $_GET['wpcf7_contact_form']) ? 'selected' : ''; ?>
                     <option value="<?php echo $post->ID; ?>" <?php echo $selected; ?>><?php echo $post->post_title; ?></option>
@@ -85,7 +83,7 @@ class WPCF7SAdmin {
             unset($actions['edit']);
             unset($actions['inline hide-if-no-js']);
 
-            $actions = array_merge(array('aview' => '<a href="' . get_edit_post_link( $post->ID ) . '">View</a>'), $actions);
+            $actions = array_merge(array('aview' => '<a href="' . get_edit_post_link( $post->ID ) . '">'.__('View', 'contact-form-submissions').'</a>'), $actions);
         }
         return $actions;
     }
@@ -109,9 +107,9 @@ class WPCF7SAdmin {
     function set_columns($columns) {
         $columns = array(
             'cb'            => '<input type="checkbox">',
-            'submission'    => __('Submission', WPCF7S_TEXT_DOMAIN),
-            'form'          => __('Contact Form', WPCF7S_TEXT_DOMAIN),
-            'date'          => __('Date', WPCF7S_TEXT_DOMAIN)
+            'submission'    => __('Submission', 'contact-form-submissions'),
+            'form'          => __('Contact Form', 'contact-form-submissions'),
+            'date'          => __('Date', 'contact-form-submissions')
         );
 
         return $columns;
@@ -143,8 +141,8 @@ class WPCF7SAdmin {
     }
 
     function meta_boxes(){
-        add_meta_box( 'wpcf7s_mail', __('Mail', WPCF7S_TEXT_DOMAIN), array($this, 'mail_meta_box'), 'wpcf7s', 'normal');
-        add_meta_box( 'wpcf7s_actions', __('Overview', WPCF7S_TEXT_DOMAIN), array($this, 'actions_meta_box'), 'wpcf7s', 'side');
+        add_meta_box( 'wpcf7s_mail', __('Mail', 'contact-form-submissions'), array($this, 'mail_meta_box'), 'wpcf7s', 'normal');
+        add_meta_box( 'wpcf7s_actions', __('Overview', 'contact-form-submissions'), array($this, 'actions_meta_box'), 'wpcf7s', 'side');
         remove_meta_box( 'submitdiv', 'wpcf7s', 'side' );
     }
 
@@ -157,31 +155,31 @@ class WPCF7SAdmin {
 
         $additional_headers = get_post_meta($post->ID, 'additional_headers', true);
         ?>
-        <table class="form-table wpcf7s" style="width: 100%;">
+        <table class="form-table contact-form-submission">
             <tbody>
                 <tr>
-                    <th scope="row">Contact Form</th>
+                    <th scope="row"><?php _e('Contact Form', 'contact-form-submissions'); ?></th>
                     <td><a href="<?php echo add_query_arg(array('page'=>'wpcf7', 'post'=>$form_id, 'action'=>'edit'), admin_url('admin.php')); ?>"><?php echo get_the_title($form_id); ?></a></td>
                 </tr>
                 <tr>
-                    <th scope="row">Sender</th>
+                    <th scope="row"><?php _e('Sender', 'contact-form-submissions'); ?></th>
                     <td><?php echo $sender_mailto; ?></td>
                 </tr>
                 <tr>
-                    <th scope="row">Recipient</th>
+                    <th scope="row"><?php _e('Recipient', 'contact-form-submissions'); ?></th>
                     <td><?php echo $recipient_mailto; ?></td>
                 </tr>
                 <tr>
-                    <th scope="row">Subject</th>
+                    <th scope="row"><?php _e('Subject', 'contact-form-submissions'); ?></th>
                     <td><?php echo get_post_meta($post->ID, 'subject', true); ?></td>
                 </tr>
                 <tr>
-                    <th scope="row">Body</th>
+                    <th scope="row"><?php _e('Body', 'contact-form-submissions'); ?></th>
                     <td><?php echo apply_filters('the_content', $post->post_content); ?></td>
                 </tr>
                 <?php if(!empty($additional_headers)){ ?>
                     <tr>
-                        <th scope="row">Additional Headers</th>
+                        <th scope="row"><?php _e('Additional Headers', 'contact-form-submissions'); ?></th>
                         <td><?php echo get_post_meta($post->ID, 'additional_headers', true); ?></td>
                     </tr>
                 <?php } ?>
@@ -198,7 +196,7 @@ class WPCF7SAdmin {
 
             <div id="misc-publishing-actions">
                 <div class="misc-pub-section curtime misc-pub-curtime">
-                    <span id="timestamp"><?php _e('Submitted', WPCF7S_TEXT_DOMAIN); ?> : <b><?php echo $date; ?></b></span>
+                    <span id="timestamp"><?php _e('Submitted', 'contact-form-submissions'); ?> : <b><?php echo $date; ?></b></span>
                 </div>
             </div>
             <div class="clear"></div>
