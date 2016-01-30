@@ -110,18 +110,17 @@ class WPCF7Submissions {
         return $post_id;
     }
 
-    private function disable_feed($query) {
-      if( !$query->is_feed || !$query->is_main_query() )
-        return query;
+    function disable_feed($query) {
+        if(!$query->is_feed || !$query->is_main_query()) {
+            return;
+        }
 
-      $exclude = 'wpcf7s';
-      $post_types = $query->get('post_type');
+        $exclude = 'wpcf7s';
+        $post_types = $query->get('post_type');
 
-      if (($key = array_search($exclude, $post_types)) !== false)
-        unset($post_types[$key]);
-
+        if (($key = array_search($exclude, $post_types)) !== false){
+            unset($post_types[$key]);
+        }
         $query->set( 'post_type', $post_types );
-
-        return query;
     }
 }
