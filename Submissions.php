@@ -50,6 +50,16 @@ class WPCF7Submissions {
     function submission($components, $contact_form, $mail){
         global $wpcf7s_post_id;
 
+        $submission = WPCF7_Submission::get_instance();
+        $submitted = $submission ? $submission->get_posted_data( $tagname ) : null;
+        if(null !== $submitted) {
+            foreach($submitted as $name => $value){
+                if('_wpcf7' !== substr($name, 0, 6)){
+                    $fields[$name] = $value;
+                }
+            }
+        }
+
         $contact_form_id = 0;
         if(method_exists($contact_form,'id')){
             $contact_form_id = $contact_form->id();
@@ -71,7 +81,8 @@ class WPCF7Submissions {
             'subject'   => $subject,
             'recipient' => $recipient,
             'additional_headers' => $headers,
-            'attachments' => $attachments
+            'attachments' => $attachments,
+            'fields'    => $fields
         );
 
         if(!empty($wpcf7s_post_id)){
@@ -106,6 +117,10 @@ class WPCF7Submissions {
         add_post_meta($post_id, 'sender', $submission['sender']);
         add_post_meta($post_id, 'recipient', $submission['recipient']);
         add_post_meta($post_id, 'additional_headers', $submission['additional_headers']);
+
+        foreach($submission['fields'] as $name => $value){
+            add_post_meta($post_id, 'wpcf7s_posted-' . $name, $value);            
+        }
 
         return $post_id;
     }

@@ -142,6 +142,7 @@ class WPCF7SAdmin {
 
     function meta_boxes(){
         add_meta_box( 'wpcf7s_mail', __('Mail', 'contact-form-submissions'), array($this, 'mail_meta_box'), 'wpcf7s', 'normal');
+        add_meta_box( 'wpcf7s_posted', __('Posted', 'contact-form-submissions'), array($this, 'posted_meta_box'), 'wpcf7s', 'normal');
         add_meta_box( 'wpcf7s_actions', __('Overview', 'contact-form-submissions'), array($this, 'actions_meta_box'), 'wpcf7s', 'side');
         remove_meta_box( 'submitdiv', 'wpcf7s', 'side' );
     }
@@ -188,6 +189,25 @@ class WPCF7SAdmin {
 
         <?php
     }
+
+    function posted_meta_box($post){
+        $values = $this->get_mail_posted_fields($post->ID);
+
+        ?>
+        <table class="form-table contact-form-submission">
+            <tbody>
+                <?php foreach($values as $key => $value){ ?>
+                    <tr>
+                        <th scope="row"><?php _e(str_replace('wpcf7s_posted-', '', $key), 'contact-form-submissions'); ?></th>
+                        <td><?php echo is_serialized($value[0]) ? implode(', ', unserialize($value[0])) : $value[0]; ?></td>
+                    </tr>
+                <?php } ?>
+            </tbody>
+        </table>
+
+        <?php
+    }
+
     function actions_meta_box($post){
         $datef = __( 'M j, Y @ H:i' );
         $date = date_i18n( $datef, strtotime( $post->post_date ) );
@@ -202,5 +222,17 @@ class WPCF7SAdmin {
             <div class="clear"></div>
         </div>
         <?php
+    }
+
+    function get_mail_posted_fields($post_id){
+        $post_meta = get_post_meta($post_id);
+        $posted = array_intersect_key(
+            $post_meta,
+            array_flip(array_filter(array_keys($post_meta), function($key) {
+                return preg_match('/^wpcf7s_posted-/', $key);
+            }))
+        );
+
+        return $posted;
     }
 }
