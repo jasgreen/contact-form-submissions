@@ -5,8 +5,6 @@ class WPCF7Submissions {
         add_action('init', array($this, 'post_type') );
 
         add_filter('wpcf7_mail_components', array($this, 'submission'), 999, 3);
-
-        add_action('pre_get_posts', array($this, 'disable_feed'));
     }
 
     function post_type() {
@@ -128,19 +126,5 @@ class WPCF7Submissions {
         }
 
         return $post_id;
-    }
-
-    function disable_feed($query) {
-        if(!$query->is_feed || !$query->is_main_query()) {
-            return;
-        }
-
-        $exclude = 'wpcf7s';
-        $post_types = $query->get('post_type');
-
-        if (($key = array_search($exclude, $post_types)) !== false){
-            unset($post_types[$key]);
-        }
-        $query->set( 'post_type', $post_types );
     }
 }
