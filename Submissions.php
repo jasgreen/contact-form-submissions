@@ -1,9 +1,9 @@
 <?php
 class WPCF7Submissions {
-    
+
     function __construct() {
         add_action('init', array($this, 'post_type') );
-        
+
         add_filter('wpcf7_mail_components', array($this, 'submission'), 999, 3);
 
         add_action('pre_get_posts', array($this, 'disable_feed'));
@@ -33,7 +33,7 @@ class WPCF7Submissions {
             'show_in_admin_bar'   => false,
             'show_in_nav_menus'   => false,
             'can_export'          => true,
-            'has_archive'         => false,     
+            'has_archive'         => false,
             'exclude_from_search' => true,
             'publicly_queryable'  => false,
             'rewrite'             => false,
@@ -109,17 +109,22 @@ class WPCF7Submissions {
         if(isset($submission['parent'])){
             $post['post_parent'] = $submission['parent'];
         }
-        
+
         $post_id = wp_insert_post($post);
-        
+
         add_post_meta($post_id, 'form_id', $submission['form_id']);
         add_post_meta($post_id, 'subject', $submission['subject']);
         add_post_meta($post_id, 'sender', $submission['sender']);
         add_post_meta($post_id, 'recipient', $submission['recipient']);
         add_post_meta($post_id, 'additional_headers', $submission['additional_headers']);
+        $additional_fields = $submission['fields'];
 
-        foreach($submission['fields'] as $name => $value){
-            add_post_meta($post_id, 'wpcf7s_posted-' . $name, $value);            
+        if(!empty($additional_fields)){
+          foreach($additional_fields as $name => $value){
+            if(!empty($value)){
+              add_post_meta($post_id, 'wpcf7s_posted-' . $name, $value);
+            }
+          }
         }
 
         return $post_id;

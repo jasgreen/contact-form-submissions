@@ -3,8 +3,8 @@ Contributors: jasongreen
 Tags: contact form 7, save contact form, submissions, contact form db, cf7, wpcf7, contact form storage, contact form seven, contact form 7 db
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SNHXWSXSPYATE
 Requires at least: 3.0.1
-Tested up to: 4.4.2
-Stable tag: 1.3
+Tested up to: 4.5.1
+Stable tag: 1.3.1
 License: GPLv3
 
 Never miss an enquiry again! Save all Contact Form 7 submissions safely in your database.
@@ -36,6 +36,9 @@ None yet
 2. Submission detailed screen
 
 == Changelog ==
+
+= 1.3.1 =
+* Updated to only save fields that have a value
 
 = 1.3 =
 * Updated to now save all posted data seperately. This can be viewed in each Submission page.
