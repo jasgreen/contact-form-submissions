@@ -5,6 +5,7 @@ class WPCF7Submissions {
         add_action('init', array($this, 'post_type') );
 
         add_filter('wpcf7_mail_components', array($this, 'submission'), 999, 3);
+        add_filter('wpcf7_posted_data', array($this, 'posted'), 999, 3);
     }
 
     function post_type() {
@@ -45,13 +46,19 @@ class WPCF7Submissions {
         register_post_type( 'wpcf7s', $args );
     }
 
-    function submission($components, $contact_form, $mail){
-        global $wpcf7s_post_id;
+    function posted($posted_data){
+        global $wpcf7s_posted_data;
 
-        $submission = WPCF7_Submission::get_instance();
-        $submitted = $submission ? $submission->get_posted_data( $tagname ) : null;
-        if(null !== $submitted) {
-            foreach($submitted as $name => $value){
+        $wpcf7s_posted_data = $posted_data;
+
+        return $posted_data;
+    }
+
+    function submission($components, $contact_form, $mail){
+        global $wpcf7s_post_id, $wpcf7s_posted_data;
+
+        if(!empty($wpcf7s_posted_data)) {
+            foreach($wpcf7s_posted_data as $name => $value){
                 if('_wpcf7' !== substr($name, 0, 6)){
                     $fields[$name] = $value;
                 }
