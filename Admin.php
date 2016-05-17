@@ -17,8 +17,6 @@ class WPCF7SAdmin {
         add_filter('views_edit-wpcf7s', array($this, 'views'), 999);
 
         add_filter('gettext', array($this, 'custom_status'), 20, 3);
-
-        add_filter('manage_wpcf7s_posts_columns', array($this, 'admin_table_columns'));
     }
 
     function custom_status($translations, $text, $domain){
