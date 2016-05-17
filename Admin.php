@@ -17,6 +17,8 @@ class WPCF7SAdmin {
         add_filter('views_edit-wpcf7s', array($this, 'views'), 999);
 
         add_filter('gettext', array($this, 'custom_status'), 20, 3);
+
+        add_filter('manage_wpcf7s_posts_columns', array($this, 'admin_table_columns'));
     }
 
     function custom_status($translations, $text, $domain){
@@ -108,9 +110,20 @@ class WPCF7SAdmin {
         $columns = array(
             'cb'            => '<input type="checkbox">',
             'submission'    => __('Submission', 'contact-form-submissions'),
-            'form'          => __('Contact Form', 'contact-form-submissions'),
-            'date'          => __('Date', 'contact-form-submissions')
+            'form'          => __('Contact Form', 'contact-form-submissions')
         );
+
+        if(isset($_GET['wpcf7_contact_form']) && !empty($_GET['wpcf7_contact_form'])){
+            $form_id = $_GET['wpcf7_contact_form'];
+
+            $wpcf7s_columns = $this->get_available_columns($form_id);
+
+            foreach($wpcf7s_columns as $meta_key){
+                $columns[$meta_key] = str_replace('wpcf7s_posted-', '', $meta_key);
+            }
+        }
+
+        $columns['date'] = __('Date', 'contact-form-submissions');
 
         return $columns;
     }
@@ -136,6 +149,9 @@ class WPCF7SAdmin {
                 </a>
                 </strong>
                 <?php
+                break;
+            default :
+                echo get_post_meta($post_id, $column, true);
                 break;
         }
     }
@@ -234,5 +250,15 @@ class WPCF7SAdmin {
         );
 
         return $posted;
+    }
+
+    function get_available_columns($form_id = 0){
+        global $wpdb;
+
+        $post_id = $wpdb->get_var("SELECT post_id FROM $wpdb->postmeta WHERE meta_key = 'form_id' AND meta_value = $form_id LIMIT 1;");
+
+        $columns = $wpdb->get_col("SELECT meta_key FROM wp_postmeta WHERE post_id = $post_id AND meta_key LIKE '%wpcf7s_%' GROUP BY meta_key");
+
+        return $columns;
     }
 }
