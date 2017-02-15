@@ -3,8 +3,8 @@ Contributors: jasongreen
 Tags: contact form 7, save contact form, submissions, contact form db, cf7, wpcf7, contact form storage, contact form seven, contact form 7 db
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SNHXWSXSPYATE
 Requires at least: 3.0.1
-Tested up to: 4.5.2
-Stable tag: 1.4.1
+Tested up to: 4.7.2
+Stable tag: 1.5
 License: GPLv3
 
 Never miss an enquiry again! Save all Contact Form 7 submissions safely in your database.
@@ -14,6 +14,8 @@ Never miss an enquiry again! Save all Contact Form 7 submissions safely in your 
 Easy install, no configuration necessary. Once activated all contact form 7 submissions will be saved so you can view them in wp-admin.
 
 Each submission is stored in the database so they can be easily managed using the default WordPress interface. You can filter subsmissions by searching for keywords, selecting individual contact forms or picking a date range. To show the posted values in the listing table just filter the submissions by a form.
+
+Files are stored in the /wp-content/uploads directory and can be previewed or downloaded from the single submission page.
 
 All submissions can be exported using the any WordPress post exporter.
 
@@ -37,6 +39,9 @@ None yet
 3. Submission detailed screen
 
 == Changelog ==
+
+= 1.5 =
+* Added support for files
 
 = 1.4.1 =
 * Minor bug fix
