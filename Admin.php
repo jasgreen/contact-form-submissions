@@ -6,11 +6,14 @@ class WPCF7SAdmin
         add_filter('manage_wpcf7s_posts_columns', array($this, 'set_columns'), 999);
         add_action('manage_wpcf7s_posts_custom_column', array($this, 'column'), 10, 2);
         add_action('restrict_manage_posts', array($this, 'filters'));
+        add_action('manage_posts_extra_tablenav', array($this, 'extra_tablenav'));
 
         add_action('add_meta_boxes', array($this, 'meta_boxes'), 25);
 
         add_action('pre_get_posts', array($this, 'admin_posts'));
         add_action('pre_get_posts', array($this, 'set_post_order'));
+
+        add_action('wp', array($this, 'export_request'));
 
         add_filter('page_row_actions', array($this, 'action_row'), 25, 2);
         add_action('admin_enqueue_scripts', array($this, 'scripts'));
@@ -95,7 +98,7 @@ class WPCF7SAdmin
     public function scripts()
     {
         // only enqueue if your on the submissions page
-        if ('wpcf7s' === get_post_type()) {
+        if ('wpcf7s' === get_post_type() || 'wpcf7s' === $_GET['post_type']) {
             wp_enqueue_style('wpcf7s-style', plugins_url('/css/admin.css', WPCF7S_FILE));
         }
     }
@@ -399,5 +402,55 @@ class WPCF7SAdmin
         $columns = $wpdb->get_col("SELECT meta_key FROM wp_postmeta WHERE post_id = $post_id AND meta_key LIKE '%wpcf7s_%' GROUP BY meta_key");
 
         return $columns;
+    }
+    /**
+     * Add an export button to the wp-list-table view
+     *
+     * @param  string $which top or bottom of the table
+     *
+     */
+    public function extra_tablenav($which = '')
+    {
+        $capability = apply_filters('wpcf7s_export_capatability','export');
+        if($capability){
+            ?>
+            <div class="alignleft actions wpcf7s-export">
+                <button type="submit" name="wpcf7s-export" value="1" class="button-primary" title="<?php _e('Export the current set of results as CSV', 'contact-form-submissions'); ?>"><?php _e('Export to CSV', 'contact-form-submissions'); ?></button>
+            </div>
+            <?php
+        }
+    }
+
+    /**
+     * Handle requests to export all submissions from the admin view
+     */
+    public function export_request(){
+        $capability = apply_filters('wpcf7s_export_capatability','export');
+        if(isset($_GET['wpcf7s-export']) && !empty($_GET['wpcf7s-export']) && current_user_can($capability)) {
+
+            // output headers so that the file is downloaded rather than displayed
+            header('Content-Type: text/csv; charset=utf-8');
+            header('Content-Disposition: attachment; filename=data.csv');
+
+            // create a file pointer connected to the output stream
+            $output = fopen('php://output', 'w');
+
+            // use the existing query but get all posts
+            global $wp_query;
+            $args = array_merge( $wp_query->query_vars, array('posts_per_page' => '-1', 'fields' => 'ids'));
+            $submissions = get_posts($args);
+
+            foreach($submissions as $post_id) {
+                $values = $this->get_mail_posted_fields($post_id);
+                foreach($values as $key => $value) {
+                    $values[$key] = implode(',', $value);
+                }
+                $contact_form_id = get_post_meta($post_id, 'form_id', true);
+                $submission_row = array_merge(array($post_id, get_the_date('Y-m-d H:i:s', $post_id), get_the_title($contact_form_id)), $values);
+                fputcsv($output, $submission_row);
+            }
+
+            die;
+        }
     }
 }
