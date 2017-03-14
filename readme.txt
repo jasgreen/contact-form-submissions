@@ -3,7 +3,7 @@ Contributors: jasongreen
 Tags: contact form 7, save contact form, submissions, contact form db, cf7, wpcf7, contact form storage, contact form seven, contact form 7 db, export contact form
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SNHXWSXSPYATE
 Requires at least: 3.0.1
-Tested up to: 4.7.2
+Tested up to: 4.7.3
 Stable tag: 1.5.1
 License: GPLv3
 
