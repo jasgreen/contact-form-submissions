@@ -98,7 +98,7 @@ class WPCF7SAdmin
     public function scripts()
     {
         // only enqueue if your on the submissions page
-        if ('wpcf7s' === get_post_type() || 'wpcf7s' === $_GET['post_type']) {
+        if ('wpcf7s' === get_post_type() || (isset($_GET['post_type']) && 'wpcf7s' === $_GET['post_type'])) {
             wp_enqueue_style('wpcf7s-style', plugins_url('/css/admin.css', WPCF7S_FILE));
         }
     }
@@ -126,7 +126,9 @@ class WPCF7SAdmin
     {
         global $post_type;
         if ($query->is_admin && 'wpcf7s' === $post_type && $query->is_main_query()) {
-            $form_id = esc_attr($_GET['wpcf7_contact_form']);
+            if(isset($_GET['wpcf7_contact_form'])){
+                $form_id = esc_attr($_GET['wpcf7_contact_form']);
+            }
             if (!empty($form_id)) {
                 $query->set('meta_query', array(
                     array(
@@ -373,6 +375,7 @@ class WPCF7SAdmin
      */
     public function get_mail_files($post_id = 0)
     {
+        $posted = array();
         $post_meta = get_post_meta($post_id);
         if($post_meta){
             $posted = array_intersect_key(
