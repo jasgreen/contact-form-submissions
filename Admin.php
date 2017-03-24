@@ -355,6 +355,7 @@ class WPCF7SAdmin
      */
     public function get_mail_posted_fields($post_id = 0)
     {
+        $posted = array();
         $post_meta = get_post_meta($post_id);
         $posted = array_intersect_key(
             $post_meta,
