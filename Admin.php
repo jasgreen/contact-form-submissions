@@ -415,13 +415,16 @@ class WPCF7SAdmin
      */
     public function extra_tablenav($which = '')
     {
-        $capability = apply_filters('wpcf7s_export_capatability','export');
-        if($capability){
-            ?>
-            <div class="alignleft actions wpcf7s-export">
-                <button type="submit" name="wpcf7s-export" value="1" class="button-primary" title="<?php _e('Export the current set of results as CSV', 'contact-form-submissions'); ?>"><?php _e('Export to CSV', 'contact-form-submissions'); ?></button>
-            </div>
-            <?php
+        $screen = get_current_screen();
+        if ('wpcf7s' === $screen->post_type){
+            $capability = apply_filters('wpcf7s_export_capatability','export');
+            if($capability){
+                ?>
+                <div class="alignleft actions wpcf7s-export">
+                    <button type="submit" name="wpcf7s-export" value="1" class="button-primary" title="<?php _e('Export the current set of results as CSV', 'contact-form-submissions'); ?>"><?php _e('Export to CSV', 'contact-form-submissions'); ?></button>
+                </div>
+                <?php
+            }
         }
     }
 
@@ -434,7 +437,7 @@ class WPCF7SAdmin
 
             // output headers so that the file is downloaded rather than displayed
             header('Content-Type: text/csv; charset=utf-8');
-            header('Content-Disposition: attachment; filename=data.csv');
+            header('Content-Disposition: attachment; filename=contact-form-submissions.csv');
 
             // create a file pointer connected to the output stream
             $output = fopen('php://output', 'w');
