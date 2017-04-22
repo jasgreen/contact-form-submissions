@@ -447,10 +447,51 @@ class WPCF7SAdmin
             $args = array_merge( $wp_query->query_vars, array('posts_per_page' => '-1', 'fields' => 'ids'));
             $submissions = get_posts($args);
 
+            // get input columns
+            $columns_field = array_map(function ($column_name){
+                return str_replace('wpcf7s_posted-','',$column_name);
+            }, array_keys($this->get_mail_posted_fields($submissions[0] )) );
+
+            // get file columns
+            $files_field = array_map(function ($column_name){
+                return str_replace('wpcf7s_file-','',$column_name);
+            }, array_keys($this->get_mail_files($submissions[0] )) );
+
+            // merge input and file columns
+            $columns = array_merge( array("id", "submission_date", "form_name"), $columns_field, $files_field );
+
+            // put on first line columns name
+            fputcsv($output,$columns);
             foreach($submissions as $post_id) {
                 $values = $this->get_mail_posted_fields($post_id);
                 foreach($values as $key => $value) {
+                    // Fix serialize field (select/radio inputs)
+                    $value = is_serialized($value) ? implode(', ', unserialize($value)) : $value;
+                    if(!empty($value)){
+                        foreach ($value as &$single){
+                            if(is_serialized($single)){
+                                $single=implode(', ', unserialize($single));
+                            }
+                        }
+                    }
                     $values[$key] = implode(',', $value);
+                }
+
+                // add file attachments
+                $files=array();
+                $files_key =$this->get_mail_files($post_id);
+                $upload_dir = wp_upload_dir();
+                $upload_dir = $upload_dir['baseurl'];
+                if(!empty($files_key)){
+                    foreach($files_key as $keyFile => $valueFile) {
+                        $files=array();
+                        if(!empty($valueFile)){
+                            foreach ($valueFile as $singleFile){
+                                $files[] = "$upload_dir/wpcf7-submissions/$post_id/$singleFile";
+                            }
+                        }
+                        $values[$keyFile] = implode(',', $files);
+                    }
                 }
                 $contact_form_id = get_post_meta($post_id, 'form_id', true);
                 $submission_row = array_merge(array($post_id, get_the_date('Y-m-d H:i:s', $post_id), get_the_title($contact_form_id)), $values);
