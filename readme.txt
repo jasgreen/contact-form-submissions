@@ -4,7 +4,7 @@ Tags: contact form 7, save contact form, submissions, contact form db, cf7, wpcf
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SNHXWSXSPYATE
 Requires at least: 3.0.1
 Tested up to: 4.7.4
-Stable tag: 1.5.4
+Stable tag: 1.5.5
 License: GPLv3
 
 Never miss an enquiry again! Save & Export your Contact Form 7 submissions.
@@ -39,6 +39,9 @@ None yet
 3. Submission detailed screen
 
 == Changelog ==
+
+= 1.5.5 =
+* Minor bug fix
 
 = 1.5.4 =
 * Minor bug fixes.

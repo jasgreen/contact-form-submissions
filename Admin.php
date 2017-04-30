@@ -28,7 +28,8 @@ class WPCF7SAdmin
      */
     public function custom_status($translations = '', $text = '', $domain = '')
     {
-        if ('Published' === $text) {
+        global $pagenow, $post_type;
+        if ('wpcf7s' === $post_type && is_admin() && 'edit.php' == $pagenow && 'Published' === $text) {
             $translations = __('Submitted', 'contact-form-submissions');
         }
         return $translations;
