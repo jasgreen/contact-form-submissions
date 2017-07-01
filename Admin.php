@@ -365,6 +365,8 @@ class WPCF7SAdmin
             }))
         );
 
+        $posted = apply_filters('wpcf7s_posted_values', $posted);
+
         return $posted;
     }
 
@@ -387,6 +389,8 @@ class WPCF7SAdmin
                 }))
             );
         }
+
+        $posted = apply_filters('wpcf7s_posted_files', $posted);
 
         return $posted;
     }
@@ -447,24 +451,12 @@ class WPCF7SAdmin
             global $wp_query;
             $args = array_merge( $wp_query->query_vars, array('posts_per_page' => '-1', 'fields' => 'ids'));
             $submissions = get_posts($args);
-
-            // get input columns
-            $columns_field = array_map(function ($column_name){
-                return str_replace('wpcf7s_posted-','',$column_name);
-            }, array_keys($this->get_mail_posted_fields($submissions[0] )) );
-
-            // get file columns
-            $files_field = array_map(function ($column_name){
-                return str_replace('wpcf7s_file-','',$column_name);
-            }, array_keys($this->get_mail_files($submissions[0] )) );
-
-            // merge input and file columns
-            $columns = array_merge( array("id", "submission_date", "form_name"), $columns_field, $files_field );
-
-            // put on first line columns name
-            fputcsv($output,$columns);
+            $csv_rows = array();
+            $columns = array();
             foreach($submissions as $post_id) {
+
                 $values = $this->get_mail_posted_fields($post_id);
+
                 foreach($values as $key => $value) {
                     // Fix serialize field (select/radio inputs)
                     $value = is_serialized($value) ? implode(', ', unserialize($value)) : $value;
@@ -475,7 +467,12 @@ class WPCF7SAdmin
                             }
                         }
                     }
-                    $values[$key] = implode(',', $value);
+                    $values[$key] = mb_convert_encoding(implode(',', $value), 'UTF-16LE');
+
+                    // if we havent already stored this column, save it now
+                    if(!in_array($key, $columns)){
+                        $columns[] = $key;
+                    }
                 }
 
                 // add file attachments
@@ -491,12 +488,31 @@ class WPCF7SAdmin
                                 $files[] = "$upload_dir/wpcf7-submissions/$post_id/$singleFile";
                             }
                         }
-                        $values[$keyFile] = implode(',', $files);
+                        $values[$keyFile] = mb_convert_encoding(implode(',', $files), 'UTF-16LE');
+
+                        // if we havent already stored this column, save it now
+                        if(!in_array($keyFile, $columns)){
+                            $columns[] = $keyFile;
+                        }
                     }
                 }
+
                 $contact_form_id = get_post_meta($post_id, 'form_id', true);
-                $submission_row = array_merge(array($post_id, get_the_date('Y-m-d H:i:s', $post_id), get_the_title($contact_form_id)), $values);
-                fputcsv($output, $submission_row);
+                $csv_rows[] = array_merge(array('id'=> $post_id, 'submission_date'=> get_the_date('Y-m-d H:i:s', $post_id), 'form_name' => get_the_title($contact_form_id)), $values);
+            }
+            // add default columns
+            $pretty_columns = $columns = array_merge( array("id", "submission_date", "form_name"), $columns);
+            foreach($pretty_columns as $key => $column) {
+                // remove the plugin's prepended keys
+                $pretty_columns[$key] = str_replace(array('wpcf7s_posted-', 'wpcf7s_file-'), '', $column);
+            }
+            fputcsv($output,$pretty_columns);
+
+            foreach($csv_rows as $key => $row){
+                foreach($columns as $column){
+                    $row_values[$column] = $row[$column];
+                }
+                fputcsv($output,$row_values);
             }
 
             die;

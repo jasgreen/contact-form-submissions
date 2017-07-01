@@ -132,60 +132,63 @@ class WPCF7Submissions
      */
     private function save($submission = array())
     {
-        $post = array(
-            'post_title'    => ' ',
-            'post_content'  => $submission['body'],
-            'post_status'   => 'publish',
-            'post_type'     => 'wpcf7s',
-        );
+        if(true === apply_filters('wpcf7s_save_submission', true, $submission['form_id']))
+        {
+            $post = array(
+                'post_title'    => ' ',
+                'post_content'  => $submission['body'],
+                'post_status'   => 'publish',
+                'post_type'     => 'wpcf7s',
+            );
 
-        if (isset($submission['parent'])) {
-            $post['post_parent'] = $submission['parent'];
-        }
+            if (isset($submission['parent'])) {
+                $post['post_parent'] = $submission['parent'];
+            }
 
-        $post_id = wp_insert_post($post);
+            $post_id = wp_insert_post($post);
 
-        // check the post was created
-        if(!empty($post_id) && !is_wp_error($post_id)){
+            // check the post was created
+            if(!empty($post_id) && !is_wp_error($post_id)){
 
-            add_post_meta($post_id, 'form_id', $submission['form_id']);
-            add_post_meta($post_id, 'subject', $submission['subject']);
-            add_post_meta($post_id, 'sender', $submission['sender']);
-            add_post_meta($post_id, 'recipient', $submission['recipient']);
-            add_post_meta($post_id, 'additional_headers', $submission['additional_headers']);
+                add_post_meta($post_id, 'form_id', $submission['form_id']);
+                add_post_meta($post_id, 'subject', $submission['subject']);
+                add_post_meta($post_id, 'sender', $submission['sender']);
+                add_post_meta($post_id, 'recipient', $submission['recipient']);
+                add_post_meta($post_id, 'additional_headers', $submission['additional_headers']);
 
-            $additional_fields = $submission['fields'];
-            if (!empty($additional_fields)) {
-                foreach ($additional_fields as $name => $value) {
-                    if (!empty($value)) {
-                        add_post_meta($post_id, 'wpcf7s_posted-' . $name, $value);
+                $additional_fields = apply_filters('wpcf7s_submission_fields', $submission['fields'], $submission['form_id']);
+                if (!empty($additional_fields)) {
+                    foreach ($additional_fields as $name => $value) {
+                        if (!empty($value)) {
+                            add_post_meta($post_id, 'wpcf7s_posted-' . $name, $value);
+                        }
+                    }
+                }
+
+                $attachments = $submission['attachments'];
+                if (!empty($attachments)) {
+
+                    $wpcf7s_dir = $this->get_wpcf7s_dir();
+                    // add a sub directory of the submission post id
+                    $wpcf7s_dir .= '/' . $post_id;
+
+                    mkdir($wpcf7s_dir, 0755, true);
+
+                    foreach ($attachments as $name => $file_path) {
+                        if (!empty($file_path)) {
+                            // get the file name
+                            $file_name = basename($file_path);
+
+                            $copied = copy($file_path, $wpcf7s_dir . '/' . $file_name);
+
+                            add_post_meta($post_id, 'wpcf7s_file-' . $name, $file_name, false);
+                        }
                     }
                 }
             }
 
-            $attachments = $submission['attachments'];
-            if (!empty($attachments)) {
-
-                $wpcf7s_dir = $this->get_wpcf7s_dir();
-                // add a sub directory of the submission post id
-                $wpcf7s_dir .= '/' . $post_id;
-
-                mkdir($wpcf7s_dir, 0755, true);
-
-                foreach ($attachments as $name => $file_path) {
-                    if (!empty($file_path)) {
-                        // get the file name
-                        $file_name = basename($file_path);
-
-                        $copied = copy($file_path, $wpcf7s_dir . '/' . $file_name);
-
-                        add_post_meta($post_id, 'wpcf7s_file-' . $name, $file_name, false);
-                    }
-                }
-            }
+            return $post_id;
         }
-
-        return $post_id;
     }
 
     /**

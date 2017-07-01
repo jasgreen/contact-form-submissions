@@ -2,7 +2,7 @@
 /*
 Plugin Name: Contact Form Submissions
 Description: Never miss an enquiry again! Save all Contact Form 7 submissions in your database.
-Version:     1.5.5
+Version:     1.5.6
 Author:      Jason Green
 License:     GPLv3
 Domain Path: /languages
@@ -40,6 +40,7 @@ add_action('admin_init', 'contact_form_submissions_admin_init');
  */
 function contact_form_submissions_textdomain()
 {
-    load_plugin_textdomain('contact-form-submissions', false, WPCF7S_DIR . '/languages/');
+    load_plugin_textdomain('contact-form-submissions', false, basename( dirname( __FILE__ ) ) . '/languages/');
+
 }
 add_action('plugins_loaded', 'contact_form_submissions_textdomain');
