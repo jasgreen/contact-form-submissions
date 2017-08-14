@@ -5,7 +5,7 @@ class WPCF7Submissions
     {
         add_action('init', array($this, 'post_type'));
 
-        add_filter('wpcf7_mail_components', array($this, 'submission'), 999, 3);
+        add_action('wpcf7_submit', array($this, 'submission'), 999, 2);
         add_filter('wpcf7_posted_data', array($this, 'posted'), 999, 3);
     }
 
@@ -72,13 +72,18 @@ class WPCF7Submissions
      *
      * @return [type]               [description]
      */
-    public function submission($components, $contact_form, $mail)
+    public function submission($contact_form, $result)
     {
         global $wpcf7s_post_id, $wpcf7s_posted_data;
 
         if (!empty($wpcf7s_posted_data)) {
             foreach ($wpcf7s_posted_data as $name => $value) {
-                if ('_wpcf7' !== substr($name, 0, 6)) {
+                if (!empty($value) && '_wpcf7' !== substr($name, 0, 6)) {
+                    // skip empty arrays
+                    if(is_array($value) && !array_filter($value)){
+                        continue;
+                    }
+
                     $fields[$name] = $value;
                 }
             }
@@ -91,11 +96,16 @@ class WPCF7Submissions
             $contact_form_id = $contact_form->id;
         }
 
-        $body = $components['body'];
-        $sender = wpcf7_strip_newline($components['sender']);
-        $recipient = wpcf7_strip_newline($components['recipient']);
-        $subject = wpcf7_strip_newline($components['subject']);
-        $headers = trim($components['additional_headers']);
+        // get the cf7 form template
+        $mail = $contact_form->prop( 'mail' );
+        // replace cf7 shortcodes with posted data
+        $mail = wpcf7_mail_replace_tags( $mail, array( 'html' => true ) );
+
+        $body = $mail['body'];
+        $sender = wpcf7_strip_newline($mail['sender']);
+        $recipient = wpcf7_strip_newline($mail['recipient']);
+        $subject = wpcf7_strip_newline($mail['subject']);
+        $headers = trim($mail['additional_headers']);
 
         // get the form file attachements
         if ( $submission = WPCF7_Submission::get_instance() ) {
@@ -123,8 +133,6 @@ class WPCF7Submissions
         if (empty($wpcf7s_post_id)) {
             $wpcf7s_post_id = $post_id;
         }
-
-        return $components;
     }
 
     /**
@@ -179,7 +187,7 @@ class WPCF7Submissions
                             // get the file name
                             $file_name = basename($file_path);
 
-                            $copied = copy($file_path, $wpcf7s_dir . '/' . $file_name);
+                            copy($file_path, $wpcf7s_dir . '/' . $file_name);
 
                             add_post_meta($post_id, 'wpcf7s_file-' . $name, $file_name, false);
                         }

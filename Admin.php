@@ -20,13 +20,13 @@ class WPCF7SAdmin
 
         add_filter('views_edit-wpcf7s', array($this, 'views'), 999);
 
-        add_filter('gettext', array($this, 'custom_status'), 20, 3);
+        add_filter('gettext', array($this, 'custom_status'), 20, 2);
     }
 
     /**
      * Replace the default post status
      */
-    public function custom_status($translations = '', $text = '', $domain = '')
+    public function custom_status($translations = '', $text = '')
     {
         global $pagenow, $post_type;
         if ('wpcf7s' === $post_type && is_admin() && 'edit.php' == $pagenow && 'Published' === $text) {
@@ -38,7 +38,7 @@ class WPCF7SAdmin
     /**
      * Change the default post sort
      */
-    public function set_post_order($query = false)
+    public function set_post_order($query)
     {
         global $pagenow, $post_type;
         if ('wpcf7s' === $post_type && is_admin() && 'edit.php' == $pagenow && !isset($_GET['orderby'])) {
@@ -57,7 +57,7 @@ class WPCF7SAdmin
         }
         $keep_views = array('all', 'publish', 'trash');
         // remove others
-        foreach ($views as $key => $view) {
+        foreach (array_keys($views) as $key) {
             if (!in_array($key, $keep_views)) {
                 unset($views[$key]);
             }
@@ -418,18 +418,15 @@ class WPCF7SAdmin
      * @param  string $which top or bottom of the table
      *
      */
-    public function extra_tablenav($which = '')
+    public function extra_tablenav()
     {
         $screen = get_current_screen();
         if ('wpcf7s' === $screen->post_type){
-            $capability = apply_filters('wpcf7s_export_capatability','export');
-            if($capability){
-                ?>
-                <div class="alignleft actions wpcf7s-export">
-                    <button type="submit" name="wpcf7s-export" value="1" class="button-primary" title="<?php _e('Export the current set of results as CSV', 'contact-form-submissions'); ?>"><?php _e('Export to CSV', 'contact-form-submissions'); ?></button>
-                </div>
-                <?php
-            }
+            ?>
+            <div class="alignleft actions wpcf7s-export">
+                <button type="submit" name="wpcf7s-export" value="1" class="button-primary" title="<?php _e('Export the current set of results as CSV', 'contact-form-submissions'); ?>"><?php _e('Export to CSV', 'contact-form-submissions'); ?></button>
+            </div>
+            <?php
         }
     }
 
@@ -437,8 +434,7 @@ class WPCF7SAdmin
      * Handle requests to export all submissions from the admin view
      */
     public function export_request(){
-        $capability = apply_filters('wpcf7s_export_capatability','export');
-        if(isset($_GET['wpcf7s-export']) && !empty($_GET['wpcf7s-export']) && current_user_can($capability)) {
+        if(isset($_GET['wpcf7s-export']) && !empty($_GET['wpcf7s-export']) && is_admin()) {
 
             // output headers so that the file is downloaded rather than displayed
             header('Content-Type: text/csv; charset=utf-8');
@@ -515,7 +511,7 @@ class WPCF7SAdmin
                 fputcsv($output,$row_values);
             }
 
-            die;
+            exit();
         }
     }
 }
