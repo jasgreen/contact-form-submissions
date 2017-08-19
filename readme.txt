@@ -4,7 +4,7 @@ Tags: contact form 7, save contact form, submissions, contact form db, cf7, wpcf
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=SNHXWSXSPYATE
 Requires at least: 3.0.1
 Tested up to: 4.8.1
-Stable tag: 1.5.7
+Stable tag: 1.5.8
 License: GPLv3
 
 Never miss an enquiry again! Save & Export your Contact Form 7 submissions.
@@ -18,6 +18,8 @@ Each submission is stored in the database so they can be easily managed using th
 Files are stored in the /wp-content/uploads directory and can be previewed or downloaded from the single submission page.
 
 All submissions can be exported in CSV format using the export button.
+
+Please note this plugin will not work with demo mode enabled.
 
 This plugin has been made with no ads or donation links so you can use this on all your sites.
 
@@ -39,6 +41,10 @@ None yet
 3. Submission detailed screen
 
 == Changelog ==
+
+= 1.5.8 =
+* Disabled saving mail2 by default. Overridable with filter wpcf7s_save_submission_mail2.
+* Fixed issue where attachments were not being saved.
 
 = 1.5.7 =
 * Fixed an issue where some admins were not able to export submissions.

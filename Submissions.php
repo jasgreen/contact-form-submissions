@@ -5,7 +5,7 @@ class WPCF7Submissions
     {
         add_action('init', array($this, 'post_type'));
 
-        add_action('wpcf7_submit', array($this, 'submission'), 999, 2);
+        add_action('wpcf7_mail_components', array($this, 'submission'), 999, 2);
         add_filter('wpcf7_posted_data', array($this, 'posted'), 999, 3);
     }
 
@@ -72,132 +72,134 @@ class WPCF7Submissions
      *
      * @return [type]               [description]
      */
-    public function submission($contact_form, $result)
-    {
-        global $wpcf7s_post_id, $wpcf7s_posted_data;
+     public function submission($components, $contact_form)
+     {
+         global $wpcf7s_post_id, $wpcf7s_posted_data;
 
-        if (!empty($wpcf7s_posted_data)) {
-            foreach ($wpcf7s_posted_data as $name => $value) {
-                if (!empty($value) && '_wpcf7' !== substr($name, 0, 6)) {
-                    // skip empty arrays
-                    if(is_array($value) && !array_filter($value)){
-                        continue;
-                    }
+         $contact_form_id = 0;
+         if (method_exists($contact_form, 'id')) {
+             $contact_form_id = $contact_form->id();
+         } elseif (property_exists($contact_form, 'id')) {
+             $contact_form_id = $contact_form->id;
+         }
 
-                    $fields[$name] = $value;
-                }
-            }
-        }
+         // don't save mail2 autoresponders by default
+         if (!empty($wpcf7s_post_id) && false === apply_filters('wpcf7s_save_submission_mail2', false, $contact_form_id)) {
+             return;
+         }
 
-        $contact_form_id = 0;
-        if (method_exists($contact_form, 'id')) {
-            $contact_form_id = $contact_form->id();
-        } elseif (property_exists($contact_form, 'id')) {
-            $contact_form_id = $contact_form->id;
-        }
+         if (!empty($wpcf7s_posted_data)) {
+             foreach ($wpcf7s_posted_data as $name => $value) {
+                 if ('_wpcf7' !== substr($name, 0, 6)) {
+                     // skip empty arrays
+                     if(is_array($value) && !array_filter($value)){
+                         continue;
+                     }
 
-        // get the cf7 form template
-        $mail = $contact_form->prop( 'mail' );
-        // replace cf7 shortcodes with posted data
-        $mail = wpcf7_mail_replace_tags( $mail, array( 'html' => true ) );
+                     $fields[$name] = $value;
+                 }
+             }
+         }
 
-        $body = $mail['body'];
-        $sender = wpcf7_strip_newline($mail['sender']);
-        $recipient = wpcf7_strip_newline($mail['recipient']);
-        $subject = wpcf7_strip_newline($mail['subject']);
-        $headers = trim($mail['additional_headers']);
+         $body = $components['body'];
+         $sender = wpcf7_strip_newline($components['sender']);
+         $recipient = wpcf7_strip_newline($components['recipient']);
+         $subject = wpcf7_strip_newline($components['subject']);
+         $headers = trim($components['additional_headers']);
 
-        // get the form file attachements
-        if ( $submission = WPCF7_Submission::get_instance() ) {
-            $attachments = $submission->uploaded_files();
-        }
+         // get the form file attachements
+         if ( $submission = WPCF7_Submission::get_instance() ) {
+             $attachments = $submission->uploaded_files();
+         }
 
-        $submission = array(
-            'form_id'   => $contact_form_id,
-            'body'      => $body,
-            'sender'    => $sender,
-            'subject'   => $subject,
-            'recipient' => $recipient,
-            'additional_headers' => $headers,
-            'attachments' => $attachments,
-            'fields'    => $fields
-        );
+         $submission = array(
+             'form_id'   => $contact_form_id,
+             'body'      => $body,
+             'sender'    => $sender,
+             'subject'   => $subject,
+             'recipient' => $recipient,
+             'additional_headers' => $headers,
+             'attachments' => $attachments,
+             'fields'    => $fields
+         );
 
-        if (!empty($wpcf7s_post_id)) {
-            $submission['parent'] = $wpcf7s_post_id;
-        }
+         if (!empty($wpcf7s_post_id)) {
+             $submission['parent'] = $wpcf7s_post_id;
+         }
 
-        // store the form submission
-        $post_id = $this->save($submission);
+         // store the form submission
+         $post_id = $this->save($submission);
 
-        if (empty($wpcf7s_post_id)) {
-            $wpcf7s_post_id = $post_id;
-        }
-    }
+         if (empty($wpcf7s_post_id)) {
+             $wpcf7s_post_id = $post_id;
+         }
+
+         return $components;
+     }
 
     /**
      * Save the form submission into the db
      */
-    private function save($submission = array())
-    {
-        if(true === apply_filters('wpcf7s_save_submission', true, $submission['form_id']))
-        {
-            $post = array(
-                'post_title'    => ' ',
-                'post_content'  => $submission['body'],
-                'post_status'   => 'publish',
-                'post_type'     => 'wpcf7s',
-            );
+     private function save($submission = array())
+     {
+         if(true === apply_filters('wpcf7s_save_submission', true, $submission['form_id']))
+         {
+             $post = array(
+                 'post_title'    => ' ',
+                 'post_content'  => $submission['body'],
+                 'post_status'   => 'publish',
+                 'post_type'     => 'wpcf7s',
+             );
 
-            if (isset($submission['parent'])) {
-                $post['post_parent'] = $submission['parent'];
-            }
+             if (isset($submission['parent'])) {
+                 $post['post_parent'] = $submission['parent'];
+             }
 
-            $post_id = wp_insert_post($post);
+             $post_id = wp_insert_post($post);
 
-            // check the post was created
-            if(!empty($post_id) && !is_wp_error($post_id)){
+             // check the post was created
+             if(!empty($post_id) && !is_wp_error($post_id)){
 
-                add_post_meta($post_id, 'form_id', $submission['form_id']);
-                add_post_meta($post_id, 'subject', $submission['subject']);
-                add_post_meta($post_id, 'sender', $submission['sender']);
-                add_post_meta($post_id, 'recipient', $submission['recipient']);
-                add_post_meta($post_id, 'additional_headers', $submission['additional_headers']);
+                 add_post_meta($post_id, 'form_id', $submission['form_id']);
+                 add_post_meta($post_id, 'subject', $submission['subject']);
+                 add_post_meta($post_id, 'sender', $submission['sender']);
+                 add_post_meta($post_id, 'recipient', $submission['recipient']);
+                 add_post_meta($post_id, 'additional_headers', $submission['additional_headers']);
 
-                $additional_fields = apply_filters('wpcf7s_submission_fields', $submission['fields'], $submission['form_id']);
-                if (!empty($additional_fields)) {
-                    foreach ($additional_fields as $name => $value) {
-                        if (!empty($value)) {
-                            add_post_meta($post_id, 'wpcf7s_posted-' . $name, $value);
-                        }
-                    }
-                }
+                 $additional_fields = apply_filters('wpcf7s_submission_fields', $submission['fields'], $submission['form_id']);
+                 if (!empty($additional_fields)) {
+                     foreach ($additional_fields as $name => $value) {
+                         if (!empty($value)) {
+                             add_post_meta($post_id, 'wpcf7s_posted-' . $name, $value);
+                         }
+                     }
+                 }
 
-                $attachments = $submission['attachments'];
-                if (!empty($attachments)) {
+                 $attachments = $submission['attachments'];
+                 if (!empty($attachments)) {
 
-                    $wpcf7s_dir = $this->get_wpcf7s_dir();
-                    // add a sub directory of the submission post id
-                    $wpcf7s_dir .= '/' . $post_id;
+                     $wpcf7s_dir = $this->get_wpcf7s_dir();
+                     // add a sub directory of the submission post id
+                     $wpcf7s_dir .= '/' . $post_id;
 
-                    mkdir($wpcf7s_dir, 0755, true);
+                     mkdir($wpcf7s_dir, 0755, true);
 
-                    foreach ($attachments as $name => $file_path) {
-                        if (!empty($file_path)) {
-                            // get the file name
-                            $file_name = basename($file_path);
+                     foreach ($attachments as $name => $file_path) {
+                         if (!empty($file_path)) {
+                             // get the file name
+                             $file_name = basename($file_path);
 
-                            copy($file_path, $wpcf7s_dir . '/' . $file_name);
+                             $copied = copy($file_path, $wpcf7s_dir . '/' . $file_name);
 
-                            add_post_meta($post_id, 'wpcf7s_file-' . $name, $file_name, false);
-                        }
-                    }
-                }
-            }
+                             add_post_meta($post_id, 'wpcf7s_file-' . $name, $file_name, false);
+                         }
+                     }
+                 }
+             }
 
-            return $post_id;
-        }
-    }
+             return $post_id;
+         }
+     }
 
     /**
      * Get the path of where uploads go
