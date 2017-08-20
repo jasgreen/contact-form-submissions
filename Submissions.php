@@ -76,6 +76,8 @@ class WPCF7Submissions
      {
          global $wpcf7s_post_id, $wpcf7s_posted_data;
 
+         $submission = WPCF7_Submission::get_instance();
+
          $contact_form_id = 0;
          if (method_exists($contact_form, 'id')) {
              $contact_form_id = $contact_form->id();
@@ -108,9 +110,7 @@ class WPCF7Submissions
          $headers = trim($components['additional_headers']);
 
          // get the form file attachements
-         if ( $submission = WPCF7_Submission::get_instance() ) {
-             $attachments = $submission->uploaded_files();
-         }
+         $attachments = $submission->uploaded_files();
 
          $submission = array(
              'form_id'   => $contact_form_id,

@@ -227,12 +227,15 @@ class WPCF7SAdmin
     public function mail_meta_box($post)
     {
         $form_id = get_post_meta($post->ID, 'form_id', true);
-        $sender = get_post_meta($post->ID, 'sender', true);
+        $sender = esc_html(get_post_meta($post->ID, 'sender', true));
         $sender_mailto = preg_replace('/([a-zA-Z0-9_\-\.]*@\\S+\\.\\w+)/', '<a href="mailto:$1">$1</a>', $sender);
-        $recipient = get_post_meta($post->ID, 'recipient', true);
+        $recipient = esc_html(get_post_meta($post->ID, 'recipient', true));
         $recipient_mailto = preg_replace('/([a-zA-Z0-9_\-\.]*@\\S+\\.\\w+)/', '<a href="mailto:$1">$1</a>', $recipient);
+        $subject = esc_html(get_post_meta($post->ID, 'subject', true));
 
-        $additional_headers = get_post_meta($post->ID, 'additional_headers', true); ?>
+        $body = apply_filters('the_content', esc_html($post->post_content));
+
+        $additional_headers = esc_html(get_post_meta($post->ID, 'additional_headers', true)); ?>
         <table class="form-table contact-form-submission">
             <tbody>
                 <tr>
@@ -249,17 +252,17 @@ class WPCF7SAdmin
                 </tr>
                 <tr>
                     <th scope="row"><?php _e('Subject', 'contact-form-submissions'); ?></th>
-                    <td><?php echo get_post_meta($post->ID, 'subject', true); ?></td>
+                    <td><?php echo $subject; ?></td>
                 </tr>
                 <tr>
                     <th scope="row"><?php _e('Body', 'contact-form-submissions'); ?></th>
-                    <td><?php echo apply_filters('the_content', $post->post_content); ?></td>
+                    <td><?php echo $body; ?></td>
                 </tr>
                 <?php if (!empty($additional_headers)) {
             ?>
                     <tr>
                         <th scope="row"><?php _e('Additional Headers', 'contact-form-submissions'); ?></th>
-                        <td><?php echo get_post_meta($post->ID, 'additional_headers', true); ?></td>
+                        <td><?php echo nl2br($additional_headers); ?></td>
                     </tr>
                 <?php
         } ?>
@@ -278,10 +281,13 @@ class WPCF7SAdmin
         <table class="form-table contact-form-submission">
             <tbody>
                 <?php foreach ($values as $key => $value) {
+                  // check if the value is serialized and unserialize it
+                  $posted_field = is_serialized($value[0]) ? implode(', ', unserialize($value[0])) : $value[0];
+                  $posted_field = esc_html($posted_field);
             ?>
                     <tr>
                         <th scope="row"><?php _e(str_replace('wpcf7s_posted-', '', $key), 'contact-form-submissions'); ?></th>
-                        <td><?php echo is_serialized($value[0]) ? implode(', ', unserialize($value[0])) : $value[0]; ?></td>
+                        <td><?php echo $posted_field; ?></td>
                     </tr>
                 <?php
         } ?>
@@ -463,6 +469,7 @@ class WPCF7SAdmin
                             }
                         }
                     }
+                    $value = sanitize_text_field($value);
                     $values[$key] = mb_convert_encoding(implode(',', $value), 'UTF-16LE');
 
                     // if we havent already stored this column, save it now
