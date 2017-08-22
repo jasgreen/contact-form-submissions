@@ -86,8 +86,8 @@ class WPCF7Submissions
          }
 
          // don't save mail2 autoresponders by default
-         if (!empty($wpcf7s_post_id) && false === apply_filters('wpcf7s_save_submission_mail2', false, $contact_form_id)) {
-             return;
+         if (!empty($wpcf7s_post_id) && false === apply_filters('wpcf7s_save_submission_mail2', true, $contact_form_id)) {
+             return $components;
          }
 
          if (!empty($wpcf7s_posted_data)) {
