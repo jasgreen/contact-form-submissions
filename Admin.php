@@ -443,11 +443,15 @@ class WPCF7SAdmin
         if(isset($_GET['wpcf7s-export']) && !empty($_GET['wpcf7s-export']) && is_admin()) {
 
             // output headers so that the file is downloaded rather than displayed
-            header('Content-Type: text/csv; charset=utf-8');
+            header('Content-Type: text/csv');
             header('Content-Disposition: attachment; filename=contact-form-submissions.csv');
+            header('Content-Transfer-Encoding: binary');
 
             // create a file pointer connected to the output stream
             $output = fopen('php://output', 'w');
+
+            // add BOM to fix UTF-8 in Excel
+            fputs($output, $bom =( chr(0xEF) . chr(0xBB) . chr(0xBF) ));
 
             // use the existing query but get all posts
             global $wp_query;
@@ -461,7 +465,6 @@ class WPCF7SAdmin
 
                 foreach($values as $key => $value) {
                     // Fix serialize field (select/radio inputs)
-                    $value = is_serialized($value) ? implode(', ', unserialize($value)) : $value;
                     if(!empty($value)){
                         foreach ($value as &$single){
                             if(is_serialized($single)){
@@ -469,8 +472,13 @@ class WPCF7SAdmin
                             }
                         }
                     }
+
+                    if(is_array($value)){
+                        $value = implode(', ', $value);
+                    }
+
                     $value = sanitize_text_field($value);
-                    $values[$key] = mb_convert_encoding(implode(',', $value), 'UTF-16LE');
+                    $values[$key] = mb_convert_encoding($value, DB_CHARSET);
 
                     // if we havent already stored this column, save it now
                     if(!in_array($key, $columns)){
@@ -491,7 +499,7 @@ class WPCF7SAdmin
                                 $files[] = "$upload_dir/wpcf7-submissions/$post_id/$singleFile";
                             }
                         }
-                        $values[$keyFile] = mb_convert_encoding(implode(',', $files), 'UTF-16LE');
+                        $values[$keyFile] = mb_convert_encoding(implode(',', $files), DB_CHARSET);
 
                         // if we havent already stored this column, save it now
                         if(!in_array($keyFile, $columns)){
@@ -518,6 +526,7 @@ class WPCF7SAdmin
                 fputcsv($output,$row_values);
             }
 
+            fclose($output);
             exit();
         }
     }
