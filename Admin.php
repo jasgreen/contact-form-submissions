@@ -442,6 +442,9 @@ class WPCF7SAdmin
     public function export_request(){
         if(isset($_GET['wpcf7s-export']) && !empty($_GET['wpcf7s-export']) && is_admin()) {
 
+            // get charset
+            $charset = get_bloginfo( 'charset' );
+
             // output headers so that the file is downloaded rather than displayed
             header('Content-Type: text/csv');
             header('Content-Disposition: attachment; filename=contact-form-submissions.csv');
@@ -478,7 +481,7 @@ class WPCF7SAdmin
                     }
 
                     $value = sanitize_text_field($value);
-                    $values[$key] = mb_convert_encoding($value, DB_CHARSET);
+                    $values[$key] = mb_convert_encoding($value, $charset);
 
                     // if we havent already stored this column, save it now
                     if(!in_array($key, $columns)){
@@ -499,7 +502,7 @@ class WPCF7SAdmin
                                 $files[] = "$upload_dir/wpcf7-submissions/$post_id/$singleFile";
                             }
                         }
-                        $values[$keyFile] = mb_convert_encoding(implode(',', $files), DB_CHARSET);
+                        $values[$keyFile] = mb_convert_encoding(implode(',', $files), $charset);
 
                         // if we havent already stored this column, save it now
                         if(!in_array($keyFile, $columns)){
