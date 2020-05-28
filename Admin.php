@@ -95,7 +95,7 @@ class WPCF7SAdmin {
 					?>
 					<?php $selected = ( $post->ID == $_GET['wpcf7_contact_form'] ); ?>
 					<option value="<?php echo esc_attr( $post->ID ); ?>"
-											  <?php 
+											  <?php
 												if ( $selected ) {
 													?>
 						selected<?php } ?>><?php echo esc_html( $post->post_title ); ?></option>
@@ -205,7 +205,7 @@ class WPCF7SAdmin {
 							'action' => 'edit',
 						],
 						admin_url( 'admin.php' )
-					) 
+					)
 				);
 				?>
 							"><?php echo esc_html( get_the_title( $form_id ) ); ?></a>
@@ -223,7 +223,7 @@ class WPCF7SAdmin {
 							'action' => 'edit',
 						],
 						admin_url( 'admin.php' )
-					) 
+					)
 				);
 				?>
 							"><?php echo esc_html( get_the_title( $form_id ) ); ?></a>
@@ -292,7 +292,7 @@ class WPCF7SAdmin {
 								'action' => 'edit',
 							],
 							admin_url( 'admin.php' )
-						) 
+						)
 					);
 					?>
 									"><?php echo esc_html( get_the_title( $form_id ) ); ?></a></td>
