@@ -1,6 +1,20 @@
 <?php
 class WPCF7SAdmin {
 
+	public static $allowed_tags = [
+		'a' => [
+			'href'   => [],
+			'target' => [],
+		],
+		'img' => [
+			'src'    => [],
+			'width'  => [],
+			'height' => [],
+			'class'  => [],
+			'alt'    => [],
+		],
+	];
+
 	public function __construct() {
 		add_filter( 'manage_wpcf7s_posts_columns', [ $this, 'set_columns' ], 999 );
 		add_action( 'manage_wpcf7s_posts_custom_column', [ $this, 'column' ], 10, 2 );
@@ -75,12 +89,12 @@ class WPCF7SAdmin {
 			];
 			$forms = get_posts( $args ); ?>
 			<select name="wpcf7_contact_form">
-				<option value="0"><?php _e( 'Contact Form', 'contact-form-submissions' ); ?></option>
+				<option value="0"><?php esc_html_e( 'Contact Form', 'contact-form-submissions' ); ?></option>
 				<?php
 				foreach ( $forms as $post ) {
 					?>
-					<?php $selected = ( $post->ID == $_GET['wpcf7_contact_form'] ) ? 'selected' : ''; ?>
-					<option value="<?php echo $post->ID; ?>" <?php echo $selected; ?>><?php echo $post->post_title; ?></option>
+					<?php $selected = ( $post->ID == $_GET['wpcf7_contact_form'] ); ?>
+					<option value="<?php echo esc_attr( $post->ID ); ?>"<?php if ( $selected ) { ?>selected<?php } ?>><?php echo esc_html( $post->post_title ); ?></option>
 					<?php
 				}
 				?>
@@ -179,45 +193,45 @@ class WPCF7SAdmin {
 				?>
 				<a href="
 				<?php
-				echo add_query_arg(
+				echo esc_url( add_query_arg(
 					[
 						'page'   => 'wpcf7',
 						'post'   => $form_id,
 						'action' => 'edit',
 					],
 					admin_url( 'admin.php' )
-				);
+				) );
 				?>
-							"><?php echo get_the_title( $form_id ); ?></a>
+							"><?php echo esc_html( get_the_title( $form_id ) ); ?></a>
 				<?php
 				break;
 			case 'sent':
 				?>
 				<a href="
 				<?php
-				echo add_query_arg(
+				echo esc_url( add_query_arg(
 					[
 						'page'   => 'wpcf7',
 						'post'   => $form_id,
 						'action' => 'edit',
 					],
 					admin_url( 'admin.php' )
-				);
+				) );
 				?>
-							"><?php echo get_the_title( $form_id ); ?></a>
+							"><?php echo esc_html( get_the_title( $form_id ) ); ?></a>
 				<?php
 				break;
 			case 'submission':
 				?>
 				<strong>
-				<a class="row-title" href="<?php echo get_edit_post_link( $post_id ); ?>">
-					<?php echo $nested . htmlspecialchars( get_post_meta( $post_id, 'sender', true ) ); ?>
+				<a class="row-title" href="<?php echo esc_url( get_edit_post_link( $post_id  )); ?>">
+					<?php echo esc_html( $nested . get_post_meta( $post_id, 'sender', true ) ); ?>
 				</a>
 				</strong>
 				<?php
 				break;
 			default:
-				echo get_post_meta( $post_id, $column, true );
+				echo esc_html( get_post_meta( $post_id, $column, true ) );
 				break;
 		}
 	}
@@ -259,42 +273,42 @@ class WPCF7SAdmin {
 		<table class="form-table contact-form-submission">
 			<tbody>
 				<tr>
-					<th scope="row"><?php _e( 'Contact Form', 'contact-form-submissions' ); ?></th>
+					<th scope="row"><?php esc_html_e( 'Contact Form', 'contact-form-submissions' ); ?></th>
 					<td><a href="
 					<?php
-					echo add_query_arg(
+					echo esc_url( add_query_arg(
 						[
 							'page'   => 'wpcf7',
 							'post'   => $form_id,
 							'action' => 'edit',
 						],
 						admin_url( 'admin.php' )
-					);
+					) );
 					?>
-									"><?php echo get_the_title( $form_id ); ?></a></td>
+									"><?php echo esc_html( get_the_title( $form_id ) ); ?></a></td>
 				</tr>
 				<tr>
-					<th scope="row"><?php _e( 'Sender', 'contact-form-submissions' ); ?></th>
-					<td><?php echo $sender_mailto; ?></td>
+					<th scope="row"><?php esc_html_e( 'Sender', 'contact-form-submissions' ); ?></th>
+					<td><?php echo esc_html( $sender_mailto ); ?></td>
 				</tr>
 				<tr>
-					<th scope="row"><?php _e( 'Recipient', 'contact-form-submissions' ); ?></th>
-					<td><?php echo $recipient_mailto; ?></td>
+					<th scope="row"><?php esc_html_e( 'Recipient', 'contact-form-submissions' ); ?></th>
+					<td><?php echo esc_html( $recipient_mailto ); ?></td>
 				</tr>
 				<tr>
-					<th scope="row"><?php _e( 'Subject', 'contact-form-submissions' ); ?></th>
-					<td><?php echo $subject; ?></td>
+					<th scope="row"><?php esc_html_e( 'Subject', 'contact-form-submissions' ); ?></th>
+					<td><?php echo esc_html( $subject ); ?></td>
 				</tr>
 				<tr>
-					<th scope="row"><?php _e( 'Body', 'contact-form-submissions' ); ?></th>
-					<td><?php echo $body; ?></td>
+					<th scope="row"><?php esc_html_e( 'Body', 'contact-form-submissions' ); ?></th>
+					<td><?php echo esc_html( $body ); ?></td>
 				</tr>
 				<?php
 				if ( ! empty( $additional_headers ) ) {
 					?>
 					<tr>
-						<th scope="row"><?php _e( 'Additional Headers', 'contact-form-submissions' ); ?></th>
-						<td><?php echo nl2br( $additional_headers ); ?></td>
+						<th scope="row"><?php esc_html_e( 'Additional Headers', 'contact-form-submissions' ); ?></th>
+						<td><?php echo wp_kses( nl2br( $additional_headers ), [ 'br' => [] ] ); ?></td>
 					</tr>
 					<?php
 				}
@@ -320,8 +334,8 @@ class WPCF7SAdmin {
 					$posted_field = esc_html( $posted_field );
 					?>
 					<tr>
-						<th scope="row"><?php _e( str_replace( 'wpcf7s_posted-', '', $key ), 'contact-form-submissions' ); ?></th>
-						<td><?php echo $posted_field; ?></td>
+						<th scope="row"><?php esc_html_e( str_replace( 'wpcf7s_posted-', '', $key ), 'contact-form-submissions' ); ?></th>
+						<td><?php echo esc_html( $posted_field ); ?></td>
 					</tr>
 					<?php
 				}
@@ -346,7 +360,7 @@ class WPCF7SAdmin {
 				foreach ( $values as $key => $files ) {
 					?>
 					<tr>
-						<th scope="row"><?php _e( str_replace( 'wpcf7s_file-', '', $key ), 'contact-form-submissions' ); ?></th>
+						<th scope="row"><?php esc_html_e( str_replace( 'wpcf7s_file-', '', $key ), 'contact-form-submissions' ); ?></th>
 						<td>
 						<?php
 						foreach ( $files as $file_path ) {
@@ -356,9 +370,9 @@ class WPCF7SAdmin {
 							$file_url   = $wpcf7s_dir . '/' . $post->ID . '/' . $file_path;
 
 							if ( in_array( $file_type['ext'], $image_exts ) ) {
-								printf( '<a href="%1$s" target="_blank"><img width="100" class="contact-form-submission-image" src="%1$s" /></a>', $file_url );
+								echo wp_kses( sprintf( '<a href="%1$s" target="_blank"><img width="100" class="contact-form-submission-image" src="%1$s" /></a>', esc_url( $file_url ) ), self::$allowed_tags );
 							} else {
-								printf( '<a href="%1$s" target="_blank">Open File</a>', $file_url );
+								echo wp_kses( sprintf( '<a href="%1$s" target="_blank">Open File</a>', esc_url( $file_url ) ), self::$allowed_tags );
 							}
 						}
 						?>
@@ -385,7 +399,7 @@ class WPCF7SAdmin {
 
 			<div id="misc-publishing-actions">
 				<div class="misc-pub-section curtime misc-pub-curtime">
-					<span id="timestamp"><?php _e( 'Submitted', 'contact-form-submissions' ); ?> : <b><?php echo $date; ?></b></span>
+					<span id="timestamp"><?php esc_html_e( 'Submitted', 'contact-form-submissions' ); ?> : <b><?php echo esc_html( $date ); ?></b></span>
 				</div>
 			</div>
 			<div class="clear"></div>
@@ -477,7 +491,7 @@ class WPCF7SAdmin {
 		if ( 'wpcf7s' === $screen->post_type ) {
 			?>
 			<div class="alignleft actions wpcf7s-export">
-				<button type="submit" name="wpcf7s-export" value="1" class="button-primary" title="<?php _e( 'Export the current set of results as CSV', 'contact-form-submissions' ); ?>"><?php _e( 'Export to CSV', 'contact-form-submissions' ); ?></button>
+				<button type="submit" name="wpcf7s-export" value="1" class="button-primary" title="<?php esc_attr_e( 'Export the current set of results as CSV', 'contact-form-submissions' ); ?>"><?php esc_html_e( 'Export to CSV', 'contact-form-submissions' ); ?></button>
 			</div>
 			<?php
 		}
