@@ -583,6 +583,7 @@ class WPCF7SAdmin {
 			fputcsv( $output, $pretty_columns );
 
 			foreach ( $csv_rows as $key => $row ) {
+				$row_values = [];
 				foreach ( $columns as $column ) {
 					$row_values[ $column ] = $row[ $column ];
 				}

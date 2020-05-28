@@ -86,6 +86,7 @@ class WPCF7Submissions {
 			return $components;
 		}
 
+		$fields = [];
 		if ( ! empty( $wpcf7s_posted_data ) ) {
 			foreach ( $wpcf7s_posted_data as $name => $value ) {
 				if ( '_wpcf7' !== substr( $name, 0, 6 ) ) {
