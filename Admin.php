@@ -76,13 +76,13 @@ class WPCF7SAdmin {
 			$forms = get_posts( $args ); ?>
 			<select name="wpcf7_contact_form">
 				<option value="0"><?php _e( 'Contact Form', 'contact-form-submissions' ); ?></option>
-				<?php 
+				<?php
 				foreach ( $forms as $post ) {
 					?>
 					<?php $selected = ( $post->ID == $_GET['wpcf7_contact_form'] ) ? 'selected' : ''; ?>
 					<option value="<?php echo $post->ID; ?>" <?php echo $selected; ?>><?php echo $post->post_title; ?></option>
 					<?php
-				} 
+				}
 				?>
 			</select>
 			<?php
@@ -178,15 +178,15 @@ class WPCF7SAdmin {
 			case 'form':
 				?>
 				<a href="
-				<?php 
+				<?php
 				echo add_query_arg(
 					[
 						'page'   => 'wpcf7',
 						'post'   => $form_id,
 						'action' => 'edit',
 					],
-					admin_url( 'admin.php' ) 
-				); 
+					admin_url( 'admin.php' )
+				);
 				?>
 							"><?php echo get_the_title( $form_id ); ?></a>
 				<?php
@@ -194,15 +194,15 @@ class WPCF7SAdmin {
 			case 'sent':
 				?>
 				<a href="
-				<?php 
+				<?php
 				echo add_query_arg(
 					[
 						'page'   => 'wpcf7',
 						'post'   => $form_id,
 						'action' => 'edit',
 					],
-					admin_url( 'admin.php' ) 
-				); 
+					admin_url( 'admin.php' )
+				);
 				?>
 							"><?php echo get_the_title( $form_id ); ?></a>
 				<?php
@@ -254,22 +254,22 @@ class WPCF7SAdmin {
 
 		$body = apply_filters( 'the_content', esc_html( $post->post_content ) );
 
-		$additional_headers = esc_html( get_post_meta( $post->ID, 'additional_headers', true ) ); 
+		$additional_headers = esc_html( get_post_meta( $post->ID, 'additional_headers', true ) );
 		?>
 		<table class="form-table contact-form-submission">
 			<tbody>
 				<tr>
 					<th scope="row"><?php _e( 'Contact Form', 'contact-form-submissions' ); ?></th>
 					<td><a href="
-					<?php 
+					<?php
 					echo add_query_arg(
 						[
 							'page'   => 'wpcf7',
 							'post'   => $form_id,
 							'action' => 'edit',
 						],
-						admin_url( 'admin.php' ) 
-					); 
+						admin_url( 'admin.php' )
+					);
 					?>
 									"><?php echo get_the_title( $form_id ); ?></a></td>
 				</tr>
@@ -289,7 +289,7 @@ class WPCF7SAdmin {
 					<th scope="row"><?php _e( 'Body', 'contact-form-submissions' ); ?></th>
 					<td><?php echo $body; ?></td>
 				</tr>
-				<?php 
+				<?php
 				if ( ! empty( $additional_headers ) ) {
 					?>
 					<tr>
@@ -297,7 +297,7 @@ class WPCF7SAdmin {
 						<td><?php echo nl2br( $additional_headers ); ?></td>
 					</tr>
 					<?php
-				} 
+				}
 				?>
 			</tbody>
 		</table>
@@ -309,11 +309,11 @@ class WPCF7SAdmin {
 	 * Output for the posted values metabox
 	 */
 	public function posted_meta_box( $post ) {
-		$values = $this->get_mail_posted_fields( $post->ID ); 
+		$values = $this->get_mail_posted_fields( $post->ID );
 		?>
 		<table class="form-table contact-form-submission">
 			<tbody>
-				<?php 
+				<?php
 				foreach ( $values as $key => $value ) {
 					// check if the value is serialized and unserialize it
 					$posted_field = is_serialized( $value[0] ) ? implode( ', ', unserialize( $value[0] ) ) : $value[0];
@@ -324,7 +324,7 @@ class WPCF7SAdmin {
 						<td><?php echo $posted_field; ?></td>
 					</tr>
 					<?php
-				} 
+				}
 				?>
 			</tbody>
 		</table>
@@ -338,17 +338,17 @@ class WPCF7SAdmin {
 
 		$values = $this->get_mail_files( $post->ID );
 
-		$image_exts = [ 'jpg', 'jpeg', 'jpe', 'gif', 'png' ]; 
+		$image_exts = [ 'jpg', 'jpeg', 'jpe', 'gif', 'png' ];
 		?>
 		<table class="form-table contact-form-submission">
 			<tbody>
-				<?php 
+				<?php
 				foreach ( $values as $key => $files ) {
 					?>
 					<tr>
 						<th scope="row"><?php _e( str_replace( 'wpcf7s_file-', '', $key ), 'contact-form-submissions' ); ?></th>
 						<td>
-						<?php 
+						<?php
 						foreach ( $files as $file_path ) {
 							$file_type = wp_check_filetype( $file_path );
 
@@ -360,12 +360,12 @@ class WPCF7SAdmin {
 							} else {
 								printf( '<a href="%1$s" target="_blank">Open File</a>', $file_url );
 							}
-						} 
+						}
 						?>
 						</td>
 					</tr>
 					<?php
-				} 
+				}
 				?>
 			</tbody>
 		</table>
@@ -379,7 +379,7 @@ class WPCF7SAdmin {
 	 */
 	public function actions_meta_box( $post ) {
 		$datef = __( 'M j, Y @ H:i' );
-		$date  = date_i18n( $datef, strtotime( $post->post_date ) ); 
+		$date  = date_i18n( $datef, strtotime( $post->post_date ) );
 		?>
 		<div id="minor-publishing">
 
@@ -510,7 +510,7 @@ class WPCF7SAdmin {
 				[
 					'posts_per_page' => '-1',
 					'fields'         => 'ids',
-				] 
+				]
 			);
 			$submissions = get_posts( $args );
 			$csv_rows    = [];
@@ -571,7 +571,7 @@ class WPCF7SAdmin {
 						'submission_date' => get_the_date( 'Y-m-d H:i:s', $post_id ),
 						'form_name'       => get_the_title( $contact_form_id ),
 					],
-					$values 
+					$values
 				);
 			}
 			// add default columns
