@@ -2,7 +2,7 @@
 class WPCF7SAdmin {
 
 	public static $allowed_tags = [
-		'a' => [
+		'a'   => [
 			'href'   => [],
 			'target' => [],
 		],
@@ -94,7 +94,11 @@ class WPCF7SAdmin {
 				foreach ( $forms as $post ) {
 					?>
 					<?php $selected = ( $post->ID == $_GET['wpcf7_contact_form'] ); ?>
-					<option value="<?php echo esc_attr( $post->ID ); ?>"<?php if ( $selected ) { ?>selected<?php } ?>><?php echo esc_html( $post->post_title ); ?></option>
+					<option value="<?php echo esc_attr( $post->ID ); ?>"
+											  <?php 
+												if ( $selected ) {
+													?>
+						selected<?php } ?>><?php echo esc_html( $post->post_title ); ?></option>
 					<?php
 				}
 				?>
@@ -193,14 +197,16 @@ class WPCF7SAdmin {
 				?>
 				<a href="
 				<?php
-				echo esc_url( add_query_arg(
-					[
-						'page'   => 'wpcf7',
-						'post'   => $form_id,
-						'action' => 'edit',
-					],
-					admin_url( 'admin.php' )
-				) );
+				echo esc_url(
+					add_query_arg(
+						[
+							'page'   => 'wpcf7',
+							'post'   => $form_id,
+							'action' => 'edit',
+						],
+						admin_url( 'admin.php' )
+					) 
+				);
 				?>
 							"><?php echo esc_html( get_the_title( $form_id ) ); ?></a>
 				<?php
@@ -209,14 +215,16 @@ class WPCF7SAdmin {
 				?>
 				<a href="
 				<?php
-				echo esc_url( add_query_arg(
-					[
-						'page'   => 'wpcf7',
-						'post'   => $form_id,
-						'action' => 'edit',
-					],
-					admin_url( 'admin.php' )
-				) );
+				echo esc_url(
+					add_query_arg(
+						[
+							'page'   => 'wpcf7',
+							'post'   => $form_id,
+							'action' => 'edit',
+						],
+						admin_url( 'admin.php' )
+					) 
+				);
 				?>
 							"><?php echo esc_html( get_the_title( $form_id ) ); ?></a>
 				<?php
@@ -224,7 +232,7 @@ class WPCF7SAdmin {
 			case 'submission':
 				?>
 				<strong>
-				<a class="row-title" href="<?php echo esc_url( get_edit_post_link( $post_id  )); ?>">
+				<a class="row-title" href="<?php echo esc_url( get_edit_post_link( $post_id ) ); ?>">
 					<?php echo esc_html( $nested . get_post_meta( $post_id, 'sender', true ) ); ?>
 				</a>
 				</strong>
@@ -276,14 +284,16 @@ class WPCF7SAdmin {
 					<th scope="row"><?php esc_html_e( 'Contact Form', 'contact-form-submissions' ); ?></th>
 					<td><a href="
 					<?php
-					echo esc_url( add_query_arg(
-						[
-							'page'   => 'wpcf7',
-							'post'   => $form_id,
-							'action' => 'edit',
-						],
-						admin_url( 'admin.php' )
-					) );
+					echo esc_url(
+						add_query_arg(
+							[
+								'page'   => 'wpcf7',
+								'post'   => $form_id,
+								'action' => 'edit',
+							],
+							admin_url( 'admin.php' )
+						) 
+					);
 					?>
 									"><?php echo esc_html( get_the_title( $form_id ) ); ?></a></td>
 				</tr>
