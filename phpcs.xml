@@ -6,6 +6,9 @@
 		<severity>0</severity>
 	</rule>
 	<rule ref="Generic.Arrays.DisallowLongArraySyntax" />
+	<rule ref="WordPress.WP.TimezoneChange.DeprecatedSniff">
+		<severity>0</severity>
+	</rule>
 
 	<arg name="colors" />
 
