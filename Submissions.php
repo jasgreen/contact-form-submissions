@@ -184,7 +184,7 @@ class WPCF7Submissions {
 							// get the file name
 							$file_name = basename( $file_path );
 
-							$copied = copy( $file_path, $wpcf7s_dir . '/' . $file_name );
+							copy( $file_path, $wpcf7s_dir . '/' . $file_name );
 
 							add_post_meta( $post_id, 'wpcf7s_file-' . $name, $file_name, false );
 						}

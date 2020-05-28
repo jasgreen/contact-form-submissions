@@ -501,7 +501,7 @@ class WPCF7SAdmin {
 			$output = fopen( 'php://output', 'w' );
 
 			// add BOM to fix UTF-8 in Excel
-			fputs( $output, $bom = ( chr( 0xEF ) . chr( 0xBB ) . chr( 0xBF ) ) );
+			fputs( $output, chr( 0xEF ) . chr( 0xBB ) . chr( 0xBF ) );
 
 			// use the existing query but get all posts
 			global $wp_query;
