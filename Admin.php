@@ -484,9 +484,30 @@ class WPCF7SAdmin {
 	public function get_available_columns( $form_id = 0 ) {
 		global $wpdb;
 
-		$post_id = $wpdb->get_var( "SELECT post_id FROM $wpdb->postmeta WHERE meta_key = 'form_id' AND meta_value = $form_id LIMIT 1;" );
+		$cache_key = 'post_id_' . $form_id;
+		$post_id   = wp_cache_get( $cache_key );
+		$columns   = false;
 
-		$columns = $wpdb->get_col( "SELECT meta_key FROM wp_postmeta WHERE post_id = $post_id AND meta_key LIKE '%wpcf7s_%' GROUP BY meta_key" );
+		if ( false === $post_id ) {
+			$post_id = $wpdb->get_var( $wpdb->prepare( "SELECT post_id FROM $wpdb->postmeta WHERE meta_key = 'form_id' AND meta_value = %d LIMIT 1", $form_id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+			if ( $post_id ) {
+				wp_cache_set( $cache_key, $post_id, false, 3600 ); // cache for one hour
+			}
+		}
+
+		if ( ! $post_id ) {
+			return false;
+		}
+
+		$cache_key = 'meta_key_' . $post_id;
+		$columns   = wp_cache_get( $cache_key );
+
+		if ( false === $columns ) {
+			$columns = $wpdb->get_col( $wpdb->prepare( "SELECT meta_key FROM $wpdb->postmeta WHERE post_id = %d AND meta_key LIKE %s GROUP BY meta_key", $post_id, '%wpcf7s_%' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+			if ( $columns ) {
+				wp_cache_set( $cache_key, $columns, false, 3600 ); // cache for one hour
+			}
+		}
 
 		return $columns;
 	}
