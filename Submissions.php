@@ -145,7 +145,7 @@ class WPCF7Submissions
          if(true === apply_filters('wpcf7s_save_submission', true, $submission['form_id']))
          {
              $post = array(
-                 'post_title'    => ' ',
+                 'post_title'    => $submission['subject'],
                  'post_content'  => $submission['body'],
                  'post_status'   => 'publish',
                  'post_type'     => 'wpcf7s',
